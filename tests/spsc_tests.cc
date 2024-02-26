@@ -142,18 +142,17 @@ TEST(SpscQueueTest, MemoryVisibility) {
     });
 
     std::thread consumer([&]() {
-        while (!q.pop_front().has_value()) {
+        while (!q.front().has_value()) {
             std::this_thread::yield();
         }
         auto popped_elem = q.pop_front();
-        if (popped_elem.has_value()) {
-            consumed_value = popped_elem.value();
-        }
+        ASSERT_TRUE(popped_elem.has_value());
+        consumed_value = popped_elem.value();
+        EXPECT_EQ(42, consumed_value);
     });
 
     producer.join();
     consumer.join();
-    EXPECT_EQ(42, consumed_value);
 }
 
 TEST(SpscQueueTest, OrderPreservation) {

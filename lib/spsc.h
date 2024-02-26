@@ -1,6 +1,7 @@
 #include <optional>
 #include <iostream>
 #include <cstddef>
+#include <atomic>
 
 namespace lockfree {
 namespace spsc {
@@ -62,8 +63,8 @@ public:
 private:
     size_t capacity_;
     T* buffer_;
-    size_t write_idx_;
-    size_t read_idx_;
+    std::atomic_size_t write_idx_;
+    std::atomic_size_t read_idx_;
 };
 
 } // namespace spsc
