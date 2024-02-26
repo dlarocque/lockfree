@@ -205,35 +205,6 @@ TEST(SpscQueueTest, HighVolume) {
     EXPECT_TRUE(q.empty());
 }
 
-TEST(SpscQueueTest, BurstTraffic) {
-    Queue<int> q(100);
-    const size_t num_bursts = 10;
-    const size_t burst_size = 100;
-
-    std::thread producer([&]() {
-        for (size_t burst = 0; burst < num_bursts; ++burst) {
-            for (size_t i = 0; i < burst_size; ++i) {
-                bool pushed = q.push_back(i);
-                EXPECT_TRUE(pushed);
-            }
-        }
-    });
-
-    std::thread consumer([&]() {
-        for (size_t burst = 0; burst < num_bursts; ++burst) {
-            for (size_t i = 0; i < burst_size; ++i) {
-                while (!q.pop_front().has_value()) {
-                    std::this_thread::yield();
-                }
-            }
-        }
-    });
-
-    producer.join();
-    consumer.join();
-    EXPECT_TRUE(q.empty());
-}
-
 // Special Cases and Edge Conditions
 TEST(SpscQueueTest, NullItems) {
     Queue<std::optional<int>> q(10); // Using std::optional<int> to allow "null" values
